@@ -1,6 +1,4 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
-import { userDescription } from './resources/user';
-import { companyDescription } from './resources/company';
 import { taskDescription } from './resources/task';
 
 export class Timr implements INodeType {
@@ -34,22 +32,12 @@ export class Timr implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'User',
-						value: 'user',
-					},
-					{
-						name: 'Company',
-						value: 'company',
-					},
-					{
 						name: 'Task',
 						value: 'task',
 					},
 				],
-				default: 'user',
+				default: 'task',
 			},
-			...userDescription,
-			...companyDescription,
 			...taskDescription,
 		],
 	};
