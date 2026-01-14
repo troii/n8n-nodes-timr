@@ -1,13 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="aquamarine"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cpu">
-    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-    <rect x="9" y="9" width="6" height="6"></rect>
-    <line x1="9" y1="1" x2="9" y2="4"></line>
-    <line x1="15" y1="1" x2="15" y2="4"></line>
-    <line x1="9" y1="20" x2="9" y2="23"></line>
-    <line x1="15" y1="20" x2="15" y2="23"></line>
-    <line x1="20" y1="9" x2="23" y2="9"></line>
-    <line x1="20" y1="14" x2="23" y2="14"></line>
-    <line x1="1" y1="9" x2="4" y2="9"></line>
-    <line x1="1" y1="14" x2="4" y2="14"></line>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+    <!-- Colors sampled from the PNG -->
+    <!-- Blue: #648CFF  (100,140,255) -->
+    <!-- Yellow: #FAD652 (250,214,82) -->
+
+    <!-- Background disc -->
+    <circle cx="256" cy="256" r="256" fill="#648CFF"/>
+
+    <!-- Ring (two stroke widths) -->
+    <!-- Thick arc: from -114° to 35° -->
+    <path
+            d="M 178.44 81.79
+       A 190.7 190.7 0 0 1 412.21 365.38"
+            fill="none"
+            stroke="#FAD652"
+            stroke-width="38"
+            stroke-linecap="round"
+    />
+
+    <!-- Thin arc: remaining part of the circle (35° to -114°) -->
+    <path
+            d="M 412.21 365.38
+       A 190.7 190.7 0 1 1 178.44 81.79"
+            fill="none"
+            stroke="#FAD652"
+            stroke-width="15"
+            stroke-linecap="round"
+    />
+
+    <!-- Clock hands -->
+    <path
+            d="M 256 256 L 256 160"
+            fill="none"
+            stroke="#FAD652"
+            stroke-width="38"
+            stroke-linecap="round"
+    />
+    <path
+            d="M 256 256 L 315 315"
+            fill="none"
+            stroke="#FAD652"
+            stroke-width="38"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+    />
 </svg>
