@@ -27,7 +27,7 @@ export class TimrOAuth2Api implements ICredentialType {
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden',
-			default: 'https://api.example.com/oauth/token',
+			default: 'https://system.timr.com/id/oauth2/token',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',

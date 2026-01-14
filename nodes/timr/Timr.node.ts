@@ -1,18 +1,19 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
 import { userDescription } from './resources/user';
 import { companyDescription } from './resources/company';
+import { taskDescription } from './resources/task';
 
 export class Timr implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Timr',
+		displayName: 'timr',
 		name: 'timr',
 		icon: { light: 'file:timr.svg', dark: 'file:timr.dark.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Interact with the Timr API',
+		description: 'Interact with the timr API',
 		defaults: {
-			name: 'Timr',
+			name: 'timr',
 		},
 		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
@@ -40,11 +41,16 @@ export class Timr implements INodeType {
 						name: 'Company',
 						value: 'company',
 					},
+					{
+						name: 'Task',
+						value: 'task',
+					},
 				],
 				default: 'user',
 			},
 			...userDescription,
 			...companyDescription,
+			...taskDescription,
 		],
 	};
 }
