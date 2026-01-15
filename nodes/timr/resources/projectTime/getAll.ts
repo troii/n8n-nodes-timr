@@ -7,6 +7,31 @@ const showOnlyForProjectTimeGetMany = {
 
 export const projectTimeGetManyDescription: INodeProperties[] = [
 	{
+		displayName: 'Return All',
+		name: 'returnAll',
+		type: 'hidden',
+		default: true,
+		routing: {
+			send: {
+				paginate: '={{ $value }}',
+			},
+			operations: {
+				pagination: {
+					type: 'generic',
+					properties: {
+						continue: '={{ !!$response.body?.next_page_token }}',
+						request: {
+							qs: {
+								limit: 500,
+								page_token: '={{ $response.body.next_page_token }}',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	{
 		displayName: 'Notes',
 		name: 'notes',
 		type: 'string',
@@ -159,24 +184,6 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		default: 50,
-		typeOptions: {
-			minValue: 1,
-			maxValue: 500,
-		},
-		displayOptions: { show: showOnlyForProjectTimeGetMany },
-		description: 'Max number of results to return',
-		routing: {
-			send: {
-				type: 'query',
-				property: 'limit',
-			},
-		},
-	},
-	{
 		displayName: 'Sort Direction',
 		name: 'sortDirection',
 		type: 'options',
@@ -209,5 +216,5 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 				property: 'sort_by',
 			},
 		},
-	}
+	},
 ];

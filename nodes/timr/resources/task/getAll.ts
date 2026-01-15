@@ -7,12 +7,37 @@ const showOnlyForTaskGetMany = {
 
 export const taskGetManyDescription: INodeProperties[] = [
 	{
+		displayName: 'Return All',
+		name: 'returnAll',
+		type: 'hidden',
+		default: true,
+		routing: {
+			send: {
+				paginate: '={{ $value }}',
+			},
+			operations: {
+				pagination: {
+					type: 'generic',
+					properties: {
+						continue: '={{ !!$response.body?.next_page_token }}',
+						request: {
+							qs: {
+								limit: 500,
+								page_token: '={{ $response.body.next_page_token }}',
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+	{
 		displayName: 'Parent Task ID',
 		name: 'parentTaskId',
 		type: 'string',
 		default: '',
 		displayOptions: { show: showOnlyForTaskGetMany },
-		description: "Restrict entries having this task as a parent task",
+		description: 'Restrict entries having this task as a parent task',
 		routing: {
 			send: {
 				type: 'query',
@@ -77,24 +102,6 @@ export const taskGetManyDescription: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		default: 50,
-		typeOptions: {
-			minValue: 1,
-			maxValue: 500,
-		},
-		displayOptions: { show: showOnlyForTaskGetMany },
-		description: 'Max number of results to return',
-		routing: {
-			send: {
-				type: 'query',
-				property: 'limit',
-			},
-		},
-	},
-	{
 		displayName: 'Sort Direction',
 		name: 'sortDirection',
 		type: 'options',
@@ -127,5 +134,5 @@ export const taskGetManyDescription: INodeProperties[] = [
 				property: 'sort_by',
 			},
 		},
-	}
+	},
 ];
