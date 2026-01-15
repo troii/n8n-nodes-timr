@@ -54,7 +54,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: { show: showOnlyForTaskGetMany },
-		description: 'Only show bookable tasks',
+		description: 'Whether to only show bookable tasks',
 		routing: {
 			send: {
 				type: 'query',
@@ -68,7 +68,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: { show: showOnlyForTaskGetMany },
-		description: 'Only show billable tasks',
+		description: 'Whether to only show billable tasks',
 		routing: {
 			send: {
 				type: 'query',
@@ -80,7 +80,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
-		default: 20,
+		default: 50,
 		typeOptions: {
 			minValue: 1,
 			maxValue: 500,

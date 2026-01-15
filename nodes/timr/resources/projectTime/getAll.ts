@@ -97,7 +97,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: { show: showOnlyForProjectTimeGetMany },
-		description: 'Only show billable entries',
+		description: 'Whether to only show billable entries',
 		routing: {
 			send: {
 				type: 'query',
@@ -112,14 +112,14 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 		default: [],
 		displayOptions: { show: showOnlyForProjectTimeGetMany },
 		options: [
-			{ name: 'Running', value: 'running' },
-			{ name: 'Paused', value: 'paused' },
-			{ name: 'Changeable', value: 'changeable' },
-			{ name: 'Locked', value: 'locked' },
 			{ name: 'Approved', value: 'approved' },
+			{ name: 'Archived', value: 'archived' },
+			{ name: 'Changeable', value: 'changeable' },
 			{ name: 'Cleared', value: 'cleared' },
 			{ name: 'Closed', value: 'closed' },
-			{ name: 'Archived', value: 'archived' },
+			{ name: 'Locked', value: 'locked' },
+			{ name: 'Paused', value: 'paused' },
+			{ name: 'Running', value: 'running' },
 		],
 		description: 'Filter entries by status',
 		routing: {
@@ -140,7 +140,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'users',
-				value: '={{ $value ? $value.split(\",\").map((entry) => entry.trim()).filter((entry) => entry) : undefined }}',
+				value: '={{ $value ? $value.split(",").map((entry) => entry.trim()).filter((entry) => entry) : undefined }}',
 			},
 		},
 	},
@@ -150,7 +150,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: { show: showOnlyForProjectTimeGetMany },
-		description: 'Only show entries changed by the user',
+		description: 'Whether to only show entries changed by the user',
 		routing: {
 			send: {
 				type: 'query',
@@ -162,7 +162,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
-		default: 20,
+		default: 50,
 		typeOptions: {
 			minValue: 1,
 			maxValue: 500,

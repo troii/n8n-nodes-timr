@@ -1,4 +1,4 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { Icon, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class TimrOAuth2Api implements ICredentialType {
 	name = 'timrOAuth2Api';
@@ -6,6 +6,8 @@ export class TimrOAuth2Api implements ICredentialType {
 	extends = ['oAuth2Api'];
 
 	displayName = 'Timr OAuth2 API';
+
+	icon: Icon = 'file:timr.svg';
 
 	// Link to your community node's README
 	documentationUrl = 'https://github.com/org/-timr?tab=readme-ov-file#credentials';
