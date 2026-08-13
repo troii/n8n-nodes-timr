@@ -42,3 +42,8 @@ jobs:
 
       - name: Publish to npm
         run: 'npm publish --provenance --access public'
+        env:
+          # The package's prepublishOnly hook runs `n8n-node prerelease`, which
+          # aborts unless this is set. `n8n-node release` sets it for local
+          # publishes; here we publish directly, so we set it ourselves.
+          RELEASE_MODE: 'true'
