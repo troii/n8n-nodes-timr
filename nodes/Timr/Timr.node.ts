@@ -1,6 +1,7 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
 import { taskDescription } from './resources/task';
 import { projectTimeDescription } from './resources/projectTime';
+import { workingTimeDescription } from './resources/workingTime';
 
 export class Timr implements INodeType {
 	description: INodeTypeDescription = {
@@ -40,11 +41,16 @@ export class Timr implements INodeType {
 						name: 'Project Time',
 						value: 'projectTime',
 					},
+					{
+						name: 'Working Time',
+						value: 'workingTime',
+					},
 				],
 				default: 'task',
 			},
 			...taskDescription,
 			...projectTimeDescription,
+			...workingTimeDescription,
 		],
 	};
 }

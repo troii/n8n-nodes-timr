@@ -84,6 +84,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'bookable',
+				value: '={{ $value ? true : undefined }}',
 			},
 		},
 	},
@@ -98,6 +99,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'billable',
+				value: '={{ $value ? true : undefined }}',
 			},
 		},
 	},

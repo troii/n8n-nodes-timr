@@ -20,7 +20,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-The node is read-only. Both resources support a single **Get Many** operation.
+The node is read-only. Every resource supports a single **Get Many** operation.
 
 ### Task — Get Many
 
@@ -52,6 +52,22 @@ Returns recorded project times (`GET /project-times`). Available filters:
 | User IDs | Restrict to specific users, as a comma-separated list of IDs |
 | Sort By / Sort Direction | Sort by `Start` or `Last Modified`, ascending or descending |
 
+### Working Time — Get Many
+
+Returns recorded working times (`GET /working-times`) — attendance times, break times and absences such as vacation or time off. Available filters:
+
+| Field | Description |
+| --- | --- |
+| Start From / Start To | Only return entries started within this day range, `YYYY-MM-DD`, both ends inclusive |
+| Last Modified After | Only return entries modified after this instant, ISO 8601 |
+| Notes | Only return entries whose notes contain this string |
+| Working Time Type IDs | Restrict to specific working time types, as a comma-separated list of IDs |
+| Working Time Type Categories | Only return entries whose working time type falls into the selected categories: Attendance Time, Break Time, Paid Time Off, Suspension, Unpaid Time Off, Vacation |
+| Statuses | Only return entries in the selected states: Approved, Archived, Changeable, Closed, Locked, Paused, Running |
+| User IDs | Restrict to specific users, as a comma-separated list of IDs |
+| Changed | Only return entries that were changed by the user |
+| Sort By / Sort Direction | Sort by `Start` or `Last Modified`, ascending or descending |
+
 ## Credentials
 
 The node authenticates against the timr API with OAuth2 (authorization code grant), so you need a timr account and an OAuth2 client.
@@ -71,15 +87,17 @@ Requires n8n 2.0.0 or newer.
 
 ## Usage
 
-**All matching records are returned.** Both operations page through the timr API automatically (500 records per request, following `next_page_token` until the last page), so there is no *Return All* or *Limit* option. A wide date range on **Project Time — Get Many** can therefore produce a large number of items and many API requests — filter with **Start From** / **Start To** where you can.
+**All matching records are returned.** Every operation pages through the timr API automatically (500 records per request, following `next_page_token` until the last page), so there is no *Return All* or *Limit* option. A wide date range on **Project Time — Get Many** or **Working Time — Get Many** can therefore produce a large number of items and many API requests — filter with **Start From** / **Start To** where you can.
 
-**Each record is one item.** The node emits one n8n item per task or project time, so you can wire the output straight into a loop, a filter, or a spreadsheet node.
+**Each record is one item.** The node emits one n8n item per task, project time or working time, so you can wire the output straight into a loop, a filter, or a spreadsheet node.
 
-**Incremental syncs.** Use **Last Modified After** on project times to fetch only what changed since the previous run, instead of re-reading the whole range.
+**Incremental syncs.** Use **Last Modified After** on project times and working times to fetch only what changed since the previous run, instead of re-reading the whole range.
+
+**Project times vs. working times.** Project times are the entries booked on a task and answer "what was worked on"; working times are the attendance, break and absence entries and answer "when was someone at work". Both are recorded per user and can be correlated over the `user` and `start` fields.
 
 **Time zones.** timr timestamps carry an explicit UTC offset reflecting the device that recorded the entry, which is not necessarily your own. Keep the offset in mind when comparing or formatting timestamps downstream.
 
-**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks and project times itself. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
+**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks, project times and working times itself. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
 
 New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walks through the basics.
 
@@ -94,5 +112,6 @@ New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walk
 | Version | Changes |
 | --- | --- |
 | 0.2.x | Initial release: **Get Many** for Tasks and Project Times, OAuth2 credentials, automatic pagination |
+| 0.3.0 | Added **Get Many** for Working Times. The **Bookable**, **Billable** and **Changed** switches are now only sent when switched on — previously they were always sent, so leaving them off filtered for non-bookable / non-billable / unchanged records instead of not filtering at all. |
 
 The node is at API version 1 and there are no breaking changes between the 0.2.x releases.
