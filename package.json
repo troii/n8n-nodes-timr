@@ -3,7 +3,7 @@
   "version": "0.2.2",
   "description": "allows n8n users to interact with the timr REST API",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/troii/n8n-nodes-timr",
   "keywords": [
     "n8n-community-node-package"
   ],
