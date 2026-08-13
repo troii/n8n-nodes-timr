@@ -9,8 +9,7 @@ export class TimrOAuth2Api implements ICredentialType {
 
 	icon: Icon = 'file:timr.svg';
 
-	// Link to your community node's README
-	documentationUrl = 'https://github.com/org/-timr?tab=readme-ov-file#credentials';
+	documentationUrl = 'https://github.com/troii/n8n-nodes-timr?tab=readme-ov-file#credentials';
 
 	properties: INodeProperties[] = [
 		{
