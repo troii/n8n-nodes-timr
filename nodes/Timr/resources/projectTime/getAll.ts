@@ -127,6 +127,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'billable',
+				value: '={{ $value ? true : undefined }}',
 			},
 		},
 	},
@@ -180,6 +181,7 @@ export const projectTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'changed',
+				value: '={{ $value ? true : undefined }}',
 			},
 		},
 	},
