@@ -57,7 +57,7 @@ Returns recorded project times (`GET /project-times`). Available filters:
 The node authenticates against the timr API with OAuth2 (authorization code grant), so you need a timr account and an OAuth2 client.
 
 1. **Request an OAuth2 client.** Client ID and Client Secret are issued by timr on request — contact [timr support](https://support.timr.com/) and ask for OAuth2 credentials for the timr API.
-2. **Create the credential in n8n.** Add a new **Timr OAuth2 API** credential and enter the Client ID and Client Secret. The authorization URL, token URL and scope (`openid timrintegration`) are preconfigured and do not need to be filled in.
+2. **Create the credential in n8n.** Add a new **Timr OAuth2 API** credential and enter the Client ID and Client Secret. The authorization URL, token URL and scope (`openid offline_access`) are preconfigured and do not need to be filled in.
 3. **Register the redirect URL.** n8n shows an *OAuth Redirect URL* on the credential. Pass that URL to timr support so it can be registered for your client — the login will be rejected otherwise.
 4. **Connect.** Click *Connect my account* and log in with your timr account to grant access.
 

@@ -40,7 +40,7 @@ export class TimrOAuth2Api implements ICredentialType {
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden',
-			default: 'openid timrintegration',
+			default: 'openid offline_access',
 		},
 		{
 			displayName: 'Authentication',
