@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-timr",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "allows n8n users to interact with the timr REST API",
   "license": "MIT",
   "homepage": "https://github.com/troii/n8n-nodes-timr",
