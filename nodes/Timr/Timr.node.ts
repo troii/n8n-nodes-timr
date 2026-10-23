@@ -27,6 +27,8 @@ export class Timr implements INodeType {
 		credentials: [{ name: 'timrOAuth2Api', required: true }],
 		requestDefaults: {
 			baseURL: 'https://api.timr.com/v1/',
+			// The timr API reads array filters as statuses=a&statuses=b, not n8n's default statuses[0]=a.
+			arrayFormat: 'repeat',
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',

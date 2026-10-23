@@ -1,4 +1,9 @@
-import type { IDisplayOptions, INodeProperties, INodePropertyRouting } from 'n8n-workflow';
+import type {
+	IDataObject,
+	IDisplayOptions,
+	INodeProperties,
+	INodePropertyRouting,
+} from 'n8n-workflow';
 
 type Show = IDisplayOptions['show'];
 
@@ -18,11 +23,9 @@ export const returnAllProperty: INodeProperties = {
 				type: 'generic',
 				properties: {
 					continue: '={{ !!$response.body?.next_page_token }}',
+					// n8n merges this shallowly into the request, so qs has to carry the filters along.
 					request: {
-						qs: {
-							limit: 500,
-							page_token: '={{ $response.body?.next_page_token }}',
-						},
+						qs: '={{ Object.assign({}, $request.qs, { limit: 500, page_token: $response.body?.next_page_token }) }}' as unknown as IDataObject,
 					},
 				},
 			},
