@@ -1,4 +1,10 @@
 import type { INodeProperties } from 'n8n-workflow';
+import {
+	commaSeparatedList,
+	sortByStartOrLastModifiedProperty,
+	sortDirectionProperty,
+	trueOrUndefined,
+} from '../shared';
 
 const showOnlyForWorkingTimeGetMany = {
 	operation: ['getAll'],
@@ -6,31 +12,6 @@ const showOnlyForWorkingTimeGetMany = {
 };
 
 export const workingTimeGetManyDescription: INodeProperties[] = [
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'hidden',
-		default: true,
-		routing: {
-			send: {
-				paginate: '={{ $value }}',
-			},
-			operations: {
-				pagination: {
-					type: 'generic',
-					properties: {
-						continue: '={{ !!$response.body?.next_page_token }}',
-						request: {
-							qs: {
-								limit: 500,
-								page_token: '={{ $response.body.next_page_token }}',
-							},
-						},
-					},
-				},
-			},
-		},
-	},
 	{
 		displayName: 'Notes',
 		name: 'notes',
@@ -98,7 +79,7 @@ export const workingTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'working_time_types',
-				value: '={{ $value ? $value.split(",").map((entry) => entry.trim()).filter((entry) => entry) : undefined }}',
+				value: commaSeparatedList,
 			},
 		},
 	},
@@ -158,7 +139,7 @@ export const workingTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'users',
-				value: '={{ $value ? $value.split(",").map((entry) => entry.trim()).filter((entry) => entry) : undefined }}',
+				value: commaSeparatedList,
 			},
 		},
 	},
@@ -173,42 +154,10 @@ export const workingTimeGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'changed',
-				value: '={{ $value ? true : undefined }}',
+				value: trueOrUndefined,
 			},
 		},
 	},
-	{
-		displayName: 'Sort Direction',
-		name: 'sortDirection',
-		type: 'options',
-		default: 'asc',
-		displayOptions: { show: showOnlyForWorkingTimeGetMany },
-		options: [
-			{ name: 'Ascending', value: 'asc' },
-			{ name: 'Descending', value: 'dsc' },
-		],
-		routing: {
-			send: {
-				type: 'query',
-				property: 'sort_direction',
-			},
-		},
-	},
-	{
-		displayName: 'Sort By',
-		name: 'sortBy',
-		type: 'options',
-		default: 'start',
-		displayOptions: { show: showOnlyForWorkingTimeGetMany },
-		options: [
-			{ name: 'Start', value: 'start' },
-			{ name: 'Last Modified', value: 'last_modified' },
-		],
-		routing: {
-			send: {
-				type: 'query',
-				property: 'sort_by',
-			},
-		},
-	},
+	sortDirectionProperty(showOnlyForWorkingTimeGetMany),
+	sortByStartOrLastModifiedProperty(showOnlyForWorkingTimeGetMany),
 ];

@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { getManyRouting } from '../shared';
 import { projectTimeGetManyDescription } from './getAll';
 
 const showOnlyForProjectTimes = {
@@ -20,12 +21,7 @@ export const projectTimeDescription: INodeProperties[] = [
 				value: 'getAll',
 				action: 'Get project times',
 				description: 'Get project times',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '/project-times',
-					},
-				},
+				routing: getManyRouting('/project-times'),
 			},
 		],
 		default: 'getAll',
