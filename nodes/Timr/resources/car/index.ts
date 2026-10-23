@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { getManyRouting } from '../shared';
+import { byIdUrl, getManyRouting, idProperty } from '../shared';
 import { carGetManyDescription } from './getAll';
+import { carWriteDescription } from './write';
 
 const showOnlyForCars = {
 	resource: ['car'],
@@ -17,14 +18,30 @@ export const carDescription: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Create',
+				value: 'create',
+				action: 'Create a car',
+				description: 'Create a car',
+				routing: { request: { method: 'POST', url: '/cars' } },
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				action: 'Get cars',
 				description: 'Get cars',
 				routing: getManyRouting('/cars'),
 			},
+			{
+				name: 'Update',
+				value: 'update',
+				action: 'Update a car',
+				description: 'Update a car',
+				routing: { request: { method: 'PATCH', url: byIdUrl('/cars', 'carId') } },
+			},
 		],
 		default: 'getAll',
 	},
+	idProperty('car', 'Car ID', ['update']),
 	...carGetManyDescription,
+	...carWriteDescription,
 ];
