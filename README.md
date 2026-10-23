@@ -20,7 +20,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-The node is read-only. Every resource supports a single **Get Many** operation.
+The node is read-only. Every resource supports a **Get Many** operation; drive logs additionally support **Get Track**.
 
 ### Task — Get Many
 
@@ -68,6 +68,69 @@ Returns recorded working times (`GET /working-times`) — attendance times, brea
 | Changed | Only return entries that were changed by the user |
 | Sort By / Sort Direction | Sort by `Start` or `Last Modified`, ascending or descending |
 
+### Working Time Type — Get Many
+
+Returns the working time types (`GET /working-time-types`) that working times and date spans refer to, for example *Attendance*, *Vacation* or *Sick Leave*. Available filters:
+
+| Field | Description |
+| --- | --- |
+| Name / Short Name / Description | Only return types whose name, short name or description contains this string |
+| Categories | Only return types in the selected categories: Attendance Time, Break Time, Paid Time Off, Suspension, Unpaid Time Off, Vacation |
+| Sub Categories | Only return types in the selected sub categories: Active Driving Time, Away, Passive Travelling Time, Present, Work From Home |
+| Edit Units | Only return types recorded in the selected units: Days, Half Days, Minutes |
+| Recording Modes | Only return types users may record themselves as selected: Allowed, By Request, Not Allowed |
+| Archived | Only return archived types |
+| Sort Direction | Sort by name, ascending or descending |
+
+### Working Time Date Span — Get Many
+
+Returns working time date spans (`GET /working-time-date-spans`) — day-based or half-day-based entries such as multi-day vacation or sick leave. Available filters:
+
+| Field | Description |
+| --- | --- |
+| From / To | Only return spans overlapping this day range, `YYYY-MM-DD`: **From** matches spans ending on or after the day, **To** matches spans starting on or before the day |
+| Last Modified After | Only return spans modified after this instant, ISO 8601 |
+| Working Time Type IDs | Restrict to specific working time types, as a comma-separated list of IDs |
+| User IDs | Restrict to specific users, as a comma-separated list of IDs |
+| Sort Direction | Sort by start, ascending or descending |
+
+### Drive Log — Get Many
+
+Returns recorded drive logs (`GET /drive-logs`) — the trips of a car with mileage, route and purpose. Available filters:
+
+| Field | Description |
+| --- | --- |
+| Start From / Start To | Only return entries started within this day range, `YYYY-MM-DD`, both ends inclusive |
+| Last Modified After | Only return entries modified after this instant, ISO 8601 |
+| Details | Only return entries whose route, purpose or visited places contain this string |
+| Car IDs | Restrict to specific cars, as a comma-separated list of IDs |
+| Drive Log Category IDs | Restrict to specific drive log categories, as a comma-separated list of IDs |
+| Statuses | Only return entries in the selected states: Approved, Archived, Changeable, Cleared, Closed, Locked, Running |
+| User IDs | Restrict to specific users, as a comma-separated list of IDs |
+| Has Track | Only return entries with a recorded GPS track |
+| Changed | Only return entries that were changed by the user |
+| Sort By / Sort Direction | Sort by `Start` or `Last Modified`, ascending or descending |
+
+### Drive Log — Get Track
+
+Returns the recorded GPS track of a single drive log (`GET /drive-logs/{id}/track`) as one item with the fields `drive_log_id` and `waypoints`, a list of `lat`/`lon` pairs. Set **Drive Log ID**, typically to `{{ $json.id }}` behind a **Drive Log — Get Many**.
+
+Drive logs without a track are answered with an error. Switch on **Has Track** in the preceding **Get Many**, or enable *On Error → Continue* on the node.
+
+### Car — Get Many
+
+Returns the cars drive logs are recorded for (`GET /cars`). Available filters:
+
+| Field | Description |
+| --- | --- |
+| Name or Plate | Only return cars whose name or licence plate contains this string |
+| Usable | Only return cars that can be used for new drive logs |
+| Sort Direction | Sort by name, ascending or descending |
+
+### Drive Log Category — Get Many
+
+Returns the drive log categories (`GET /drive-log-categories`), for example business or private trips. The only option is **Sort Direction** — sort by name, ascending or descending.
+
 ## Credentials
 
 The node authenticates against the timr API with OAuth2 (authorization code grant), so you need a timr account and an OAuth2 client.
@@ -77,7 +140,7 @@ The node authenticates against the timr API with OAuth2 (authorization code gran
 3. **Register the redirect URL.** n8n shows an *OAuth Redirect URL* on the credential. Pass that URL to timr support so it can be registered for your client — the login will be rejected otherwise.
 4. **Connect.** Click *Connect my account* and log in with your timr account to grant access.
 
-The credential is used against the timr API at `https://api.timr.com/v0.2/`; the login itself runs against `https://system.timr.com/id/`.
+The credential is used against the timr API at `https://api.timr.com/v1/` ([API documentation](https://developer.timr.com/)); the login itself runs against `https://system.timr.com/id/`.
 
 Access is subject to the permissions of the timr user that grants access. A user who may only see their own times will only get their own times back, even without a **User IDs** filter.
 
@@ -87,17 +150,19 @@ Requires n8n 2.0.0 or newer.
 
 ## Usage
 
-**All matching records are returned.** Every operation pages through the timr API automatically (500 records per request, following `next_page_token` until the last page), so there is no *Return All* or *Limit* option. A wide date range on **Project Time — Get Many** or **Working Time — Get Many** can therefore produce a large number of items and many API requests — filter with **Start From** / **Start To** where you can.
+**All matching records are returned.** Every operation pages through the timr API automatically (500 records per request, following `next_page_token` until the last page), so there is no *Return All* or *Limit* option. A wide date range on **Project Time**, **Working Time** or **Drive Log — Get Many** can therefore produce a large number of items and many API requests — filter with **Start From** / **Start To** where you can.
 
-**Each record is one item.** The node emits one n8n item per task, project time or working time, so you can wire the output straight into a loop, a filter, or a spreadsheet node.
+**Each record is one item.** Every **Get Many** operation emits one n8n item per record, so you can wire the output straight into a loop, a filter, or a spreadsheet node.
 
-**Incremental syncs.** Use **Last Modified After** on project times and working times to fetch only what changed since the previous run, instead of re-reading the whole range.
+**Incremental syncs.** Use **Last Modified After** on project times, working times, working time date spans and drive logs to fetch only what changed since the previous run, instead of re-reading the whole range.
 
 **Project times vs. working times.** Project times are the entries booked on a task and answer "what was worked on"; working times are the attendance, break and absence entries and answer "when was someone at work". Both are recorded per user and can be correlated over the `user` and `start` fields.
 
+**Resolving references.** Records reference related entities by a partial object with an `id` — a working time its `working_time_type`, a drive log its `car` and `drive_log_category`. Read the full entities with the matching **Get Many** and join them over `id`, for example with a **Merge** node.
+
 **Time zones.** timr timestamps carry an explicit UTC offset reflecting the device that recorded the entry, which is not necessarily your own. Keep the offset in mind when comparing or formatting timestamps downstream.
 
-**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks, project times and working times itself. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
+**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks, times, drive logs and their related entities itself. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
 
 New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walks through the basics.
 
@@ -112,6 +177,6 @@ New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walk
 | Version | Changes |
 | --- | --- |
 | 0.2.x | Initial release: **Get Many** for Tasks and Project Times, OAuth2 credentials, automatic pagination |
-| 0.3.0 | Added **Get Many** for Working Times. The **Bookable**, **Billable** and **Changed** switches are now only sent when switched on — previously they were always sent, so leaving them off filtered for non-bookable / non-billable / unchanged records instead of not filtering at all. |
+| 0.3.0 | Switched to the generally available timr API v1. Added **Get Many** for Working Times, Working Time Types, Working Time Date Spans, Drive Logs, Cars and Drive Log Categories, and **Get Track** for Drive Logs. **Get Many** now emits one item per record — previously it emitted one item per page of up to 500 records, holding them in a `data` array. Filters are now applied: up to 0.2.x the pagination replaced the whole query string, so every **Get Many** returned all records regardless of the filters set. Multi-value filters such as **Statuses** or **User IDs** are sent as repeated query parameters, and switches such as **Bookable**, **Billable** and **Changed** only filter when switched on. |
 
-The node is at API version 1 and there are no breaking changes between the 0.2.x releases.
+The node is at node version 1. Workflows built on 0.2.x that read the `data` array of a **Get Many** item need to be adapted to the per-record items of 0.3.0.
