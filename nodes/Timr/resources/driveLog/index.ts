@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { getManyRouting } from '../shared';
+import { byIdUrl, deleteRouting, getManyRouting, idProperty } from '../shared';
 import { driveLogGetManyDescription } from './getAll';
+import { driveLogWriteDescription } from './write';
 
 const showOnlyForDriveLogs = {
 	resource: ['driveLog'],
@@ -17,6 +18,20 @@ export const driveLogDescription: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Create',
+				value: 'create',
+				action: 'Create a drive log',
+				description: 'Create a drive log',
+				routing: { request: { method: 'POST', url: '/drive-logs' } },
+			},
+			{
+				name: 'Delete',
+				value: 'delete',
+				action: 'Delete a drive log',
+				description: 'Delete a drive log',
+				routing: deleteRouting('/drive-logs', 'driveLogId'),
+			},
+			{
 				name: 'Get Many',
 				value: 'getAll',
 				action: 'Get drive logs',
@@ -29,10 +44,7 @@ export const driveLogDescription: INodeProperties[] = [
 				action: 'Get the track of a drive log',
 				description: 'Get the recorded GPS track of a drive log',
 				routing: {
-					request: {
-						method: 'GET',
-						url: '=/drive-logs/{{ encodeURIComponent($parameter.driveLogId) }}/track',
-					},
+					request: { method: 'GET', url: `${byIdUrl('/drive-logs', 'driveLogId')}/track` },
 					// The API returns a bare waypoint array; keep it as one item per drive log.
 					output: {
 						postReceive: [
@@ -47,17 +59,17 @@ export const driveLogDescription: INodeProperties[] = [
 					},
 				},
 			},
+			{
+				name: 'Update',
+				value: 'update',
+				action: 'Update a drive log',
+				description: 'Update a drive log',
+				routing: { request: { method: 'PATCH', url: byIdUrl('/drive-logs', 'driveLogId') } },
+			},
 		],
 		default: 'getAll',
 	},
-	{
-		displayName: 'Drive Log ID',
-		name: 'driveLogId',
-		type: 'string',
-		required: true,
-		default: '',
-		displayOptions: { show: { ...showOnlyForDriveLogs, operation: ['getTrack'] } },
-		description: 'ID of the drive log whose track to return',
-	},
+	idProperty('driveLog', 'Drive Log ID', ['delete', 'getTrack', 'update']),
 	...driveLogGetManyDescription,
+	...driveLogWriteDescription,
 ];
