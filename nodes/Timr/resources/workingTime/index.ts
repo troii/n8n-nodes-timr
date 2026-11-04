@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { getManyRouting } from '../shared';
 import { workingTimeGetManyDescription } from './getAll';
 
 const showOnlyForWorkingTimes = {
@@ -20,12 +21,7 @@ export const workingTimeDescription: INodeProperties[] = [
 				value: 'getAll',
 				action: 'Get working times',
 				description: 'Get working times',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '/working-times',
-					},
-				},
+				routing: getManyRouting('/working-times'),
 			},
 		],
 		default: 'getAll',

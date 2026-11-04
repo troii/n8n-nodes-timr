@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { sortDirectionProperty, trueOrUndefined } from '../shared';
 
 const showOnlyForTaskGetMany = {
 	operation: ['getAll'],
@@ -6,31 +7,6 @@ const showOnlyForTaskGetMany = {
 };
 
 export const taskGetManyDescription: INodeProperties[] = [
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'hidden',
-		default: true,
-		routing: {
-			send: {
-				paginate: '={{ $value }}',
-			},
-			operations: {
-				pagination: {
-					type: 'generic',
-					properties: {
-						continue: '={{ !!$response.body?.next_page_token }}',
-						request: {
-							qs: {
-								limit: 500,
-								page_token: '={{ $response.body.next_page_token }}',
-							},
-						},
-					},
-				},
-			},
-		},
-	},
 	{
 		displayName: 'Parent Task ID',
 		name: 'parentTaskId',
@@ -84,7 +60,7 @@ export const taskGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'bookable',
-				value: '={{ $value ? true : undefined }}',
+				value: trueOrUndefined,
 			},
 		},
 	},
@@ -99,27 +75,11 @@ export const taskGetManyDescription: INodeProperties[] = [
 			send: {
 				type: 'query',
 				property: 'billable',
-				value: '={{ $value ? true : undefined }}',
+				value: trueOrUndefined,
 			},
 		},
 	},
-	{
-		displayName: 'Sort Direction',
-		name: 'sortDirection',
-		type: 'options',
-		default: 'asc',
-		displayOptions: { show: showOnlyForTaskGetMany },
-		options: [
-			{ name: 'Ascending', value: 'asc' },
-			{ name: 'Descending', value: 'dsc' },
-		],
-		routing: {
-			send: {
-				type: 'query',
-				property: 'sort_direction',
-			},
-		},
-	},
+	sortDirectionProperty(showOnlyForTaskGetMany),
 	{
 		displayName: 'Sort By',
 		name: 'sortBy',

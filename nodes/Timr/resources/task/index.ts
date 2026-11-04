@@ -1,4 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
+import { getManyRouting } from '../shared';
 import { taskGetManyDescription } from './getAll';
 
 const showOnlyForTasks = {
@@ -20,12 +21,7 @@ export const taskDescription: INodeProperties[] = [
 				value: 'getAll',
 				action: 'Get tasks',
 				description: 'Get tasks',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '/tasks',
-					},
-				},
+				routing: getManyRouting('/tasks'),
 			},
 		],
 		default: 'getAll',
