@@ -20,7 +20,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-The node is read-only. Every resource supports a **Get Many** operation; drive logs additionally support **Get Track**.
+Every resource supports a **Get Many** operation. Working times, project times, tasks, drive logs and working time date spans can also be created, updated and deleted, cars can be created and updated — see [Create, Update and Delete](#create-update-and-delete). Drive logs additionally support **Get Track**.
 
 ### Task — Get Many
 
@@ -131,6 +131,29 @@ Returns the cars drive logs are recorded for (`GET /cars`). Available filters:
 
 Returns the drive log categories (`GET /drive-log-categories`), for example business or private trips. The only option is **Sort Direction** — sort by name, ascending or descending.
 
+### Create, Update and Delete
+
+| Resource | Required on Create | Optional on Create (Additional Fields) | Delete |
+| --- | --- | --- | --- |
+| Working Time | User ID, Working Time Type ID, Start, Status, Changed | End, Notes, Duration Type, Break Times | yes |
+| Project Time | User ID, Task ID, Start, Status, Changed | End, Notes, Billable, Break Times | yes |
+| Task | Name, Bookable, Billable | Parent Task ID, Description, External Description, External ID, Start Date, End Date, Lock Date, Earliest Start Time, Latest End Time, Project Time Notes Required, Custom Field 1–3 | yes, together with all subtasks |
+| Drive Log | User ID, Car ID, Drive Log Category ID, Start, Start Mileage, Status, Changed | End, End Mileage, Route, Purpose, Visited | yes |
+| Car | Name, Plate | External ID, Usable | no |
+| Working Time Date Span | User ID, Working Time Type ID, Start, End | Start Half Day, End Half Day, Notes, Substitute User ID | yes |
+
+**Update** takes the ID of the record and an **Update Fields** collection with the same fields as Create, except **User ID** and **Car ID**, which can't be changed. Only the fields you add are sent; all others stay unchanged, so add at least one field. Fields can't be cleared through the node.
+
+Things to know when writing:
+
+* **Timestamps** — **Start** and **End** of times and drive logs are RFC 3339 date-times with a UTC offset, e.g. `2026-10-23T09:00:00+02:00`. Keep the offset of the person who worked; timr shows every entry in the offset it was recorded with. Dates of tasks and date spans are `YYYY-MM-DD`.
+* **Status and Changed** — the API requires both on create. They default to *Changeable* and off, which is what a newly recorded, unapproved entry looks like.
+* **Break Times** — a JSON array such as `[{ "type": "manual", "duration_minutes": 30 }]`. It replaces all breaks of the entry.
+* **Day-based working time types** — types recorded in days or half days need **Duration Type**, and **Start** and **End** at midnight of the same day. For multi-day absences use a **Working Time Date Span** instead.
+* **Requests instead of entries** — if a working time type can only be recorded by request, timr creates a working time request instead of changing the working time.
+* **Delete** emits one item `{ "id": "…", "deleted": true }` per deleted record. A task with recorded project times on itself or any subtask can't be deleted.
+* **Not exposed** — locations, `metadata`, task budget and geofence settings, tracks, attachments and assignments can't be written through the node yet.
+
 ## Credentials
 
 The node authenticates against the timr API with OAuth2 (authorization code grant), so you need a timr account and an OAuth2 client.
@@ -162,7 +185,7 @@ Requires n8n 2.0.0 or newer.
 
 **Time zones.** timr timestamps carry an explicit UTC offset reflecting the device that recorded the entry, which is not necessarily your own. Keep the offset in mind when comparing or formatting timestamps downstream.
 
-**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks, times, drive logs and their related entities itself. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
+**Use as an AI tool.** The node is available as a tool for AI agents, so an agent can look up tasks, times, drive logs and their related entities itself — and, with the write operations, create, change and delete them within the permissions of the connected timr user. Self-hosted instances need `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true` for community nodes to be usable as tools.
 
 New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walks through the basics.
 
@@ -177,6 +200,6 @@ New to n8n? The [Try it out](https://docs.n8n.io/try-it-out/) documentation walk
 | Version | Changes |
 | --- | --- |
 | 0.2.x | Initial release: **Get Many** for Tasks and Project Times, OAuth2 credentials, automatic pagination |
-| 0.3.0 | Switched to the generally available timr API v1. Added **Get Many** for Working Times, Working Time Types, Working Time Date Spans, Drive Logs, Cars and Drive Log Categories, and **Get Track** for Drive Logs. **Get Many** now emits one item per record — previously it emitted one item per page of up to 500 records, holding them in a `data` array. Filters are now applied: up to 0.2.x the pagination replaced the whole query string, so every **Get Many** returned all records regardless of the filters set. Multi-value filters such as **Statuses** or **User IDs** are sent as repeated query parameters, and switches such as **Bookable**, **Billable** and **Changed** only filter when switched on. |
+| 0.3.0 | Switched to the generally available timr API v1. Added **Get Many** for Working Times, Working Time Types, Working Time Date Spans, Drive Logs, Cars and Drive Log Categories, and **Get Track** for Drive Logs. Added **Create**, **Update** and **Delete** for Working Times, Project Times, Tasks, Drive Logs and Working Time Date Spans, and **Create** and **Update** for Cars. **Get Many** now emits one item per record — previously it emitted one item per page of up to 500 records, holding them in a `data` array. Filters are now applied: up to 0.2.x the pagination replaced the whole query string, so every **Get Many** returned all records regardless of the filters set. Multi-value filters such as **Statuses** or **User IDs** are sent as repeated query parameters, and switches such as **Bookable**, **Billable** and **Changed** only filter when switched on. |
 
 The node is at node version 1. Workflows built on 0.2.x that read the `data` array of a **Get Many** item need to be adapted to the per-record items of 0.3.0.
